@@ -6,11 +6,18 @@
     <title>AI 写作助手 · 智能文案生成</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
+.whale { font-size: 48px; display: block; text-align: center; animation: whaleJump 1.4s ease-in-out infinite; }
+.whale-text { margin-top: 10px; text-align: center; color: #2b6cb0; font-size: 14px; letter-spacing: 2px; }
+@keyframes whaleJump {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  35% { transform: translateY(-24px) rotate(-10deg); }
+  50% { transform: translateY(-24px) rotate(10deg); }
+  70% { transform: translateY(0) rotate(0deg); }
+}
         :root {
             --bg: #050810;
-            --text: #f1f5f9;
-            --text-dim: #94a3b8;
+            --text: #ffffff;
+            --text-dim: #cbd5e1;
             --accent: #22d3ee;
             --accent-2: #3b82f6;
             --accent-3: #8b5cf6;
@@ -511,7 +518,7 @@
             padding: 26px;
             font-size: 15px;
             line-height: 1.85;
-            color: #e2e8f0;
+            color: #ffffff;
             white-space: pre-wrap;
             word-wrap: break-word;
             min-height: 100px;
@@ -794,7 +801,10 @@
 
         <!-- Result -->
         <div class="result-card" id="resultCard">
-            <div class="result-header">
+            <div class="result-header"><div class="whale-loading" id="whaleLoading" style="display:none;">
+  <div class="whale">🐳</div>
+  <div class="whale-text">正在生成…</div>
+</div>
                 <div class="result-title">
                     <div class="result-title-icon">📄</div>
                     <span id="resultTitle">生成结果</span>
@@ -815,8 +825,7 @@
     <script>
         // ===== 配置 =====
         const API_URL = 'https://api.siliconflow.cn/v1/chat/completions';
-        const API_KEY = 'sk-roamlhyqmdnejgoxmnumzwxyovdigktsfawncvmhugaemfhy';
-         // ← 替换为你的 SiliconFlow API Key
+        const API_KEY = 'sk-jdvubzcqbtxradnvtbhhncjqkzhtnypqtnkwasophoenxwkp';
         const MODEL = 'Qwen/Qwen2.5-14B-Instruct';
 
         // ===== DOM =====
@@ -871,7 +880,7 @@
             resultCard.classList.add('show');
             resultTitle.textContent = currentType;
             resultContent.innerHTML = `
-                <div class="loading-dots"><span></span><span></span><span></span></div>
+                <div class="whale">🐳</div>
                 <span class="loading-text"></span>
             `;
             resultContent.querySelector('.loading-text').textContent = `正在生成「${topic}」的${currentType}...`;
@@ -885,7 +894,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`
+                        'Authorization': 'Bearer ' + API_KEY,
                     },
                     signal: controller.signal,
                     body: JSON.stringify({
@@ -972,7 +981,7 @@
                     }
                 } else {
                     let hint = '';
-                    if (err.message.includes('401')) hint = '\n\n提示：请检查 API_KEY 是否正确。';
+                    if (err.message.includes('401')) hint = '\n\n提示：请检查后端 API Key 配置是否正确。';
                     else if (err.message.includes('Failed to fetch')) hint = '\n\n提示：网络连接失败，请检查网络或接口地址。';
 
                     resultContent.innerHTML = `
